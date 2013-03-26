@@ -9,37 +9,17 @@
 
 namespace StickyNotes\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController,
+use Core\Controller\CoreController,
     Zend\View\Model\ViewModel, 
     Album\Form\AlbumForm,
     Doctrine\ORM\EntityManager,
     StickyNotes\Model\Entity\StickyNote;
 
-class StickyNotesController extends AbstractActionController {
-    
-    /**
-     * @var Doctrine\ORM\EntityManager
-     */
-    protected $em;
-    protected $_stickyNotesTable;
-    
-    public function setEntityManager(EntityManager $em)
-    {
-        $this->em = $em;
-    }
-    
-    public function getEntityManager()
-    {
-        if (null === $this->em) {
-            $this->em = $this->getServiceLocator()->get('doctrine.entitymanager.orm_default');
-        }
-        return $this->em;
-    }
-    
+class StickyNotesController extends CoreController {
+     
     public function indexAction() {
-        //var_dump($this->getEntityManager()->getRepository('StickyNotes\Model\Entity\StickyNote'));die;
         return new ViewModel(array(
-                    'stickynotes' => $this->getEntityManager()->getRepository('StickyNotes\Model\Entity\StickyNote')->findAll(), 
+                    'stickynotes' => $this->getEntityClass('StickyNotes\Model\Entity\StickyNote')->findAll(), 
                 ));
     }
 
