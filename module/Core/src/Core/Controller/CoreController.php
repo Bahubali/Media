@@ -18,17 +18,8 @@ class CoreController extends AbstractActionController {
     /**
      * @var Doctrine\ORM\EntityManager
      */
-    protected $_entityManager;
+    protected $_entityManager = null;
     
-    /**
-     * Constructor
-     * 
-     * @return void
-     */
-    public function __construct()
-    {
-        
-    }
     
     /**
      * Get Entity Class

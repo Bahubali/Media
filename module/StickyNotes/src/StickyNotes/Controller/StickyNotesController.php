@@ -13,38 +13,52 @@ use Core\Controller\CoreController,
     Zend\View\Model\ViewModel, 
     Album\Form\AlbumForm,
     Doctrine\ORM\EntityManager,
-    StickyNotes\Model\Entity\StickyNote;
+    StickyNotes\Model\StickyNoteManager;
 
 class StickyNotesController extends CoreController {
-     
+
+    /**
+     * List All Notes
+     * 
+     * (non-PHPdoc)
+     * @see Zend\Mvc\Controller.AbstractActionController::indexAction()
+     */
     public function indexAction() {
         return new ViewModel(array(
                     'stickynotes' => $this->getEntityClass('StickyNotes\Model\Entity\StickyNote')->findAll(), 
                 ));
     }
-
+    
+    /**
+     * Add New Note Action
+     * 
+     * @return void
+     */
     public function addAction() {
         $request = $this->getRequest();
         $response = $this->getResponse();
-        if ($request->isPost()) {
-            $newNote = new \StickyNotes\Model\Entity\StickyNote();
-            $newNote->setCreated(date("Y-m-d H:i:s"));
-            if (!$note_id = $this->getEntityManager()->persist($newNote))
+        if ($request->isPost()) {           
+            $noteId = \StickyNotes\Model\StickyNoteManager::addNote($this->getEntityManager());
+            if (!$noteId)
                 $response->setContent(\Zend\Json\Json::encode(array('response' => false)));
             else {
-                $response->setContent(\Zend\Json\Json::encode(array('response' => true, 'new_note_id' => $note_id)));
+                $response->setContent(\Zend\Json\Json::encode(array('response' => true, 'new_note_id' => $noteId)));
             }
         }
         return $response;
     }
-
+    
+    /**
+     * Remove Note Action
+     * 
+     * @return \Zend\Stdlib\ResponseInterface
+     */
     public function removeAction() {
         $request = $this->getRequest();
         $response = $this->getResponse();
         if ($request->isPost()) {
-            $post_data = $request->getPost();
-            $note_id = $post_data['id'];
-            if (!$this->getEntityManager()->getRepository('StickyNotes\Model\Entity\StickyNote')->removeStickyNote($note_id))
+            $postData = $request->getPost();
+            if (!\StickyNotes\Model\StickyNoteManager::removeNote($this->getEntityManager(), $postData["id"]))
                 $response->setContent(\Zend\Json\Json::encode(array('response' => false)));
             else {
                 $response->setContent(\Zend\Json\Json::encode(array('response' => true)));
@@ -52,18 +66,18 @@ class StickyNotesController extends CoreController {
         }
         return $response;
     }
-
+    
+    /**
+     * Update Action
+     * 
+     * @return void
+     */
     public function updateAction() {
-        // update post
         $request = $this->getRequest();
         $response = $this->getResponse();
         if ($request->isPost()) {
-            $post_data = $request->getPost();
-            $note_id = $post_data['id'];
-            $note_content = $post_data['content'];
-            $stickynote = $this->getEntityManager()->getRepository('StickyNotes\Model\Entity\StickyNote')->getStickyNote($note_id);
-            $stickynote->setNote($note_content);
-            if (!$this->getEntityManager()->getRepository('StickyNotes\Model\Entity\StickyNote')->saveStickyNote($stickynote))
+            $postData = $request->getPost();
+            if (!\StickyNotes\Model\StickyNoteManager::updateNote($this->getEntityManager(), $postData))
                 $response->setContent(\Zend\Json\Json::encode(array('response' => false)));
             else {
                 $response->setContent(\Zend\Json\Json::encode(array('response' => true)));
@@ -71,14 +85,4 @@ class StickyNotesController extends CoreController {
         }
         return $response;
     }
-
-    public function getStickyNotesTable() {
-        if (!$this->_stickyNotesTable) {
-            $sm = $this->getServiceLocator();
-            var_dump($sm->get('Doctrine\ORM\EntityManager'));die;
-            $this->_stickyNotesTable = $sm->get('StickyNotes\Model\StickyNotesTable');
-        }
-        return $this->_stickyNotesTable;
-    }
-
 }
