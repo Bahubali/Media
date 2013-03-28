@@ -29,15 +29,20 @@ class Module {
     }
 
     public function getServiceConfig() {
-       /*  return array(
+         return array(
             'factories' => array(
                 'StickyNotes\Model\StickyNotesTable' => function($sm) {
                     $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
                     $table = new Model\StickyNotesTable($dbAdapter);
                     return $table;
                 },
+                'StickyNotes\Model\StickyQuestionsTable' => function($sm) {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $table = new Model\StickyQuestionsTable($dbAdapter);
+                    return $table;
+                },
             ),
-        ); */
+        ); 
     }
 
 }
