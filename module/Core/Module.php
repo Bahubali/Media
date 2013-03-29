@@ -8,8 +8,20 @@
 
 namespace Core;
 
-class Module {
+use Zend\ModuleManager\ModuleManager;
 
+class Module {
+    
+    public function init(ModuleManager $moduleManager)
+    {
+        /*On controller event dispatch assign request and response parameters */
+        $sharedEvents = $moduleManager->getEventManager()->getSharedManager();
+        $sharedEvents->attach(__NAMESPACE__, 'dispatch', function($event) {
+              $controller = $event->getTarget();
+              $controller->request = $event->getRequest();
+              $controller->response = $event->getResponse();
+        });
+    }
     public function getAutoloaderConfig() {
         return array(
             'Zend\Loader\ClassMapAutoloader' => array(

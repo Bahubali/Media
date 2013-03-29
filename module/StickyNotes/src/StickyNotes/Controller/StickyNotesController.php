@@ -35,17 +35,15 @@ class StickyNotesController extends CoreController {
      * @return void
      */
     public function addAction() {
-        $request = $this->getRequest();
-        $response = $this->getResponse();
-        if ($request->isPost()) {           
+        if ($this->request->isPost()) {           
             $noteId = \StickyNotes\Model\StickyNoteManager::addNote($this->getEntityManager());
             if (!$noteId)
-                $response->setContent(\Zend\Json\Json::encode(array('response' => false)));
+                $this->response->setContent(\Zend\Json\Json::encode(array('response' => false)));
             else {
-                $response->setContent(\Zend\Json\Json::encode(array('response' => true, 'new_note_id' => $noteId)));
+                $this->response->setContent(\Zend\Json\Json::encode(array('response' => true, 'new_note_id' => $noteId)));
             }
         }
-        return $response;
+        return $this->response;
     }
     
     /**
@@ -54,17 +52,16 @@ class StickyNotesController extends CoreController {
      * @return \Zend\Stdlib\ResponseInterface
      */
     public function removeAction() {
-        $request = $this->getRequest();
-        $response = $this->getResponse();
-        if ($request->isPost()) {
-            $postData = $request->getPost();
+        
+        if ($this->request->isPost()) {
+            $postData = $this->request->getPost();
             if (!\StickyNotes\Model\StickyNoteManager::removeNote($this->getEntityManager(), $postData["id"]))
-                $response->setContent(\Zend\Json\Json::encode(array('response' => false)));
+                $this->response->setContent(\Zend\Json\Json::encode(array('response' => false)));
             else {
-                $response->setContent(\Zend\Json\Json::encode(array('response' => true)));
+                $this->response->setContent(\Zend\Json\Json::encode(array('response' => true)));
             }
         }
-        return $response;
+        return $this->response;
     }
     
     /**
@@ -73,16 +70,15 @@ class StickyNotesController extends CoreController {
      * @return void
      */
     public function updateAction() {
-        $request = $this->getRequest();
-        $response = $this->getResponse();
-        if ($request->isPost()) {
-            $postData = $request->getPost();
+        
+        if ($this->request->isPost()) {
+            $postData = $this->request->getPost();
             if (!\StickyNotes\Model\StickyNoteManager::updateNote($this->getEntityManager(), $postData))
-                $response->setContent(\Zend\Json\Json::encode(array('response' => false)));
+                $this->response->setContent(\Zend\Json\Json::encode(array('response' => false)));
             else {
-                $response->setContent(\Zend\Json\Json::encode(array('response' => true)));
+                $this->response->setContent(\Zend\Json\Json::encode(array('response' => true)));
             }
         }
-        return $response;
+        return $this->response;
     }
 }
